@@ -24,6 +24,7 @@ import SmartText from "~/editor/extensions/SmartText";
 import useCurrentTeam from "~/hooks/useCurrentTeam";
 import useCurrentUser from "~/hooks/useCurrentUser";
 import useFocusedComment from "~/hooks/useFocusedComment";
+import useMobile from "~/hooks/useMobile";
 import usePolicy from "~/hooks/usePolicy";
 import useStores from "~/hooks/useStores";
 import {
@@ -73,6 +74,7 @@ function DocumentEditor(props: Props, ref: React.RefObject<any>) {
   const titleRef = React.useRef<RefHandle>(null);
   const { t } = useTranslation();
   const match = useRouteMatch();
+  const isMobile = useMobile();
   const focusedComment = useFocusedComment();
   const { ui, comments } = useStores();
   const user = useCurrentUser({ rejectOnEmpty: false });
@@ -229,8 +231,8 @@ function DocumentEditor(props: Props, ref: React.RefObject<any>) {
         }
         extensions={extensions}
         editorStyle={{
-          padding: "0 32px",
-          margin: "0 -32px",
+          padding: `0 ${isMobile ? 12 : 32}px`,
+          margin: `0 -${isMobile ? 12 : 32}px`,
           paddingBottom: `calc(50vh - ${
             childRef.current?.offsetHeight || 0
           }px)`,

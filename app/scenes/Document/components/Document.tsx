@@ -603,6 +603,10 @@ const MaxWidth = styled(Flex)<MaxWidthProps>`
 
   padding-bottom: 16px;
 
+  ${breakpoint("moble")`
+    padding: 0 12px;
+  `};
+
   ${breakpoint("tablet")`
     margin: 4px auto 12px;
     max-width: ${(props: MaxWidthProps) =>
