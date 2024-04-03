@@ -1,6 +1,7 @@
 /* eslint-disable no-irregular-whitespace */
 import { lighten, transparentize } from "polished";
 import styled, { DefaultTheme, css, keyframes } from "styled-components";
+import breakpoint from "styled-components-breakpoint";
 import { videoStyle } from "./Video";
 
 export type Props = {
@@ -1137,6 +1138,7 @@ mark {
 
 .code-block {
   position: relative;
+  margin: 0 -24px;
 }
 
 .code-block[data-language=mermaidjs] {
@@ -1593,6 +1595,11 @@ const EditorContainer = styled.div<Props>`
   ${codeBlockStyle}
   ${findAndReplaceStyle}
   ${emailStyle}
+  ${breakpoint("desktop")`
+    .code-block {
+      margin: 0;
+    }
+  `};
 `;
 
 export default EditorContainer;

@@ -25,4 +25,9 @@ destroy:
 	docker compose stop
 	docker compose rm -f
 
+docker:
+	docker build . -f ./Dockerfile.base -t shepherdwind/outline-base
+	docker build . -t shepherdwind/outline:latest
+	docker push shepherdwind/outline:latest
+
 .PHONY: up build destroy test watch # let's go to reserve rules names

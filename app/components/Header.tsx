@@ -127,7 +127,7 @@ const Wrapper = styled(Flex)<WrapperProps>`
       backdrop-filter: blur(20px);
       `};
 
-  padding: 12px;
+  padding: 12px 24px;
   transition: all 100ms ease-out;
   transform: translate3d(0, 0, 0);
   min-height: 64px;

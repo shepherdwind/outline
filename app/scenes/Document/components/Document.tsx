@@ -596,16 +596,12 @@ type MaxWidthProps = {
 
 const MaxWidth = styled(Flex)<MaxWidthProps>`
   // Adds space to the gutter to make room for heading annotations
-  padding: 0 32px;
+  padding: 0 24px;
   transition: padding 100ms;
   max-width: 100vw;
   width: 100%;
 
   padding-bottom: 16px;
-
-  ${breakpoint("moble")`
-    padding: 0 12px;
-  `};
 
   ${breakpoint("tablet")`
     margin: 4px auto 12px;

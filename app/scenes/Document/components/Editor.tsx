@@ -231,8 +231,8 @@ function DocumentEditor(props: Props, ref: React.RefObject<any>) {
         }
         extensions={extensions}
         editorStyle={{
-          padding: `0 ${isMobile ? 12 : 32}px`,
-          margin: `0 -${isMobile ? 12 : 32}px`,
+          padding: `0 ${isMobile ? 24 : 32}px`,
+          margin: `0 -${isMobile ? 24 : 32}px`,
           paddingBottom: `calc(50vh - ${
             childRef.current?.offsetHeight || 0
           }px)`,
