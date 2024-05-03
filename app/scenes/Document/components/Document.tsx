@@ -402,8 +402,7 @@ class DocumentScene extends React.Component<Props> {
     const showContents =
       ui.tocVisible && ((readOnly && hasHeadings) || !readOnly);
     const multiplayerEditor =
-      !document.isArchived && !document.isDeleted && !revision;
-    // !document.isArchived && !document.isDeleted && !revision && !isShare;
+      !document.isArchived && !document.isDeleted && !revision && !isShare;
 
     const canonicalUrl = shareId
       ? this.props.match.url
