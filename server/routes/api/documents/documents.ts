@@ -210,17 +210,7 @@ router.post(
     const { sort, direction } = ctx.input.body;
     const { user } = ctx.state.auth;
     const collectionIds = await user.collectionIds();
-    const collectionScope: Readonly<ScopeOptions> = {
-      method: ["withCollectionPermissions", user.id],
-    };
-    const viewScope: Readonly<ScopeOptions> = {
-      method: ["withViews", user.id],
-    };
-    const documents = await Document.scope([
-      "defaultScope",
-      collectionScope,
-      viewScope,
-    ]).findAll({
+    const documents = await Document.defaultScopeWithUser(user.id).findAll({
       where: {
         teamId: user.teamId,
         collectionId: collectionIds,
@@ -256,6 +246,9 @@ router.post(
     const collectionIds = await user.collectionIds({
       paranoid: false,
     });
+    const membershipScope: Readonly<ScopeOptions> = {
+      method: ["withMembership", user.id],
+    };
     const collectionScope: Readonly<ScopeOptions> = {
       method: ["withCollectionPermissions", user.id],
     };
@@ -263,6 +256,7 @@ router.post(
       method: ["withViews", user.id],
     };
     const documents = await Document.scope([
+      membershipScope,
       collectionScope,
       viewScope,
       "withDrafts",
@@ -785,6 +779,7 @@ router.post(
     const {
       query,
       collectionId,
+      documentId,
       userId,
       dateFilter,
       statusFilter = [],
@@ -853,6 +848,18 @@ router.post(
         authorize(user, "readDocument", collection);
       }
 
+      let documentIds = undefined;
+      if (documentId) {
+        const document = await Document.findByPk(documentId, {
+          userId: user.id,
+        });
+        authorize(user, "read", document);
+        documentIds = [
+          documentId,
+          ...(await document.findAllChildDocumentIds()),
+        ];
+      }
+
       let collaboratorIds = undefined;
 
       if (userId) {
@@ -862,6 +869,7 @@ router.post(
       response = await SearchHelper.searchForUser(user, query, {
         collaboratorIds,
         collectionId,
+        documentIds,
         dateFilter,
         statusFilter,
         offset,
@@ -1213,17 +1221,6 @@ router.post(
       });
       authorize(user, "permanentDelete", document);
 
-      await Document.update(
-        {
-          parentDocumentId: null,
-        },
-        {
-          where: {
-            parentDocumentId: document.id,
-          },
-          paranoid: false,
-        }
-      );
       await documentPermanentDeleter([document]);
       await Event.create({
         name: "documents.permanent_delete",
@@ -1697,6 +1694,57 @@ router.post(
         memberships: memberships.map(presentMembership),
         users: memberships.map((membership) => presentUser(membership.user)),
       },
+    };
+  }
+);
+
+router.post(
+  "documents.empty_trash",
+  auth({ role: UserRole.Admin }),
+  async (ctx: APIContext) => {
+    const { user } = ctx.state.auth;
+
+    const collectionIds = await user.collectionIds({
+      paranoid: false,
+    });
+    const collectionScope: Readonly<ScopeOptions> = {
+      method: ["withCollectionPermissions", user.id],
+    };
+    const documents = await Document.scope([
+      collectionScope,
+      "withDrafts",
+    ]).findAll({
+      where: {
+        deletedAt: {
+          [Op.ne]: null,
+        },
+        [Op.or]: [
+          {
+            collectionId: {
+              [Op.in]: collectionIds,
+            },
+          },
+          {
+            createdById: user.id,
+            collectionId: {
+              [Op.is]: null,
+            },
+          },
+        ],
+      },
+      paranoid: false,
+    });
+
+    await documentPermanentDeleter(documents);
+    await Event.create({
+      name: "documents.empty_trash",
+      teamId: user.teamId,
+      actorId: user.id,
+      ip: ctx.request.ip,
+    });
+
+    ctx.body = {
+      success: true,
     };
   }
 );

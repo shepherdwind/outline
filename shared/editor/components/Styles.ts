@@ -261,6 +261,11 @@ const emailStyle = (props: Props) => css`
     border-radius: 8px;
     padding: 6px 8px;
   }
+
+  .image > img {
+    width: auto;
+    height: auto;
+  }
 `;
 
 const style = (props: Props) => `
@@ -283,6 +288,10 @@ width: 100%;
   font-weight: 500;
   font-size: 0.9em;
   cursor: default;
+
+  &:before {
+    content: "@";
+  }
 }
 
 > div {
@@ -336,7 +345,9 @@ width: 100%;
     font-weight: 600;
     cursor: text;
 
-    & + p {
+    & + p,
+    // accounts for block insert trigger and other widgets between heading and paragraph
+    & + .ProseMirror-widget + p {
       margin-top: 0.25em;
     }
 
@@ -526,7 +537,6 @@ iframe.embed {
 
 .image-right-50 {
   float: right;
-  width: 33.3%;
   margin-left: 2em;
   margin-bottom: 1em;
   clear: initial;
@@ -534,7 +544,6 @@ iframe.embed {
 
 .image-left-50 {
   float: left;
-  width: 33.3%;
   margin-right: 2em;
   margin-bottom: 1em;
   clear: initial;
@@ -1144,11 +1153,16 @@ mark {
 .code-block[data-language=mermaidjs] {
   margin: 0.75em 0;
 
-  pre {
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;
-    margin-bottom: -20px;
-    overflow: hidden;
+  ${
+    !props.staticHTML &&
+    css`
+      pre {
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+        margin-bottom: -20px;
+        overflow: hidden;
+      }
+    `
   }
 
   // Hide code without display none so toolbar can still be positioned against it
@@ -1158,7 +1172,7 @@ mark {
     overflow: hidden;
 
     // Allows the margin to collapse correctly by moving div out of the flow
-    position: absolute;
+    position: ${props.staticHTML ? "relative" : "absolute"};
   }
 }
 
