@@ -182,7 +182,7 @@ const DocumentLink = styled(Link)<{
   padding: 6px 8px;
   border-radius: 8px;
   max-height: 50vh;
-  width: calc(100vw - 8px);
+  width: calc(100vw - 16px);
   cursor: var(--pointer);
 
   &:focus-visible {

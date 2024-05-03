@@ -43,7 +43,7 @@ function MultiplayerEditor({ onSynced, ...props }: Props, ref: any) {
   const documentId = props.id;
   const history = useHistory();
   const { t } = useTranslation();
-  const currentUser = useCurrentUser();
+  const currentUser = useCurrentUser({ rejectOnEmpty: false });
   const { presence, auth, ui } = useStores();
   const [showCursorNames, setShowCursorNames] = React.useState(false);
   const [remoteProvider, setRemoteProvider] =
@@ -129,6 +129,9 @@ function MultiplayerEditor({ onSynced, ...props }: Props, ref: any) {
       setLocalSynced(!!ydoc.get("default")._start)
     );
     provider.on("synced", () => {
+      if (!currentUser) {
+        return;
+      }
       presence.touch(documentId, currentUser.id, false);
       setRemoteSynced(true);
     });
@@ -185,18 +188,18 @@ function MultiplayerEditor({ onSynced, ...props }: Props, ref: any) {
     presence,
     ydoc,
     token,
-    currentUser.id,
+    currentUser?.id,
     isMounted,
     auth,
   ]);
 
   const user = React.useMemo(
     () => ({
-      id: currentUser.id,
-      name: currentUser.name,
-      color: currentUser.color,
+      id: currentUser?.id,
+      name: currentUser?.name,
+      color: currentUser?.color,
     }),
-    [currentUser.id, currentUser.color, currentUser.name]
+    [currentUser?.id, currentUser?.color, currentUser?.name]
   );
 
   const extensions = React.useMemo(() => {
