@@ -1,5 +1,4 @@
 import markdownit, { PluginSimple } from "markdown-it";
-import { matchPairs } from "./matchPairs";
 
 export default function makeRules({
   rules = {},
@@ -14,7 +13,6 @@ export default function makeRules({
     linkify: false,
     ...rules,
   });
-  markdownIt.use(matchPairs);
   plugins.forEach((plugin) => markdownIt.use(plugin));
   return markdownIt;
 }
